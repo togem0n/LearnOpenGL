@@ -53,12 +53,14 @@ int main()
 		return -1;
 	}
 
+	// build and compile shader program
+	// --------------------------------
+	// vertex shader
 	unsigned int vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
-
 	// check if vertexShader compile successfully
 	int success;
 	char infoLog[512];
@@ -70,11 +72,12 @@ int main()
 		std::cout << "ERROR::SHADER::VERTEX::COMPLICATION_FAILED\n" << infoLog << std::endl;
 	}
 
+	// fragment shader
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
-
+	// check if fragmentShader compile successfully
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
@@ -82,44 +85,58 @@ int main()
 		std::cout << "ERROR::SHADER::VERTEX::COMPLICATION_FAILED\n" << infoLog << std::endl;
 	}
 
+	// link shaders
 	unsigned int shaderProgram;
 	shaderProgram = glCreateProgram();
 
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
-
+	// check linkinng errors
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success)
 	{
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 	}
-
-	glUseProgram(shaderProgram);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
+	
+	// set up vertex data and buffers and configure vertex attributes
+	// --------------------------------------------------------------
 	float vertices[] = {
 		-0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, 0.0f,
 		0.0f, 0.5f, 0.0f
 	};
 
+	// Initialization code (done once unless object ned to be changed frequently)
+	// 1. bind Vertex Array Object (VAO)
+	// 2. copy our vertices array in a buffer for OpenGL to use (VBO operations)
+	// 3. then set our vertex attributes pointers (mapping)
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &VBO); // generate a buffer to store the data we created before(vertices)
+	// bind the Vertex Array Object first, then bind and set vertex buffers, and then configure vertex attributes.
 	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); // since buffer objects also has many different types, here we bind the data to the buffer.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);// after we bind the buffer, we still need to send the data in.
+
+	// now we stored the vertex data within memory on graphics card and managed by VBO
+	// which will be later processed by vertex shader and fragment shader.
+
+	// the reason why we need VAO is after we store the data in GPU, and specify the shader to process it
+	// OpenGL does not yet know how it should interpret the vertex data in memory and 
+	// how it should connect the vertex data to the vertex shader's attributes.
+	// thus we need to link the vertex attributes.
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+	// the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	// you can unbind VAO afterwards so other VAO calls wont accidentally modify this VAO but this rarely happens.
+	// modifying other VAOs requires a call to glBindVertexArray anyways so we generally dont unbind VAOs (nor VBOs) when it's not necessary.
 	glBindVertexArray(0);
-
 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	// render loop
@@ -135,6 +152,7 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		// draw first triangle ^^
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
