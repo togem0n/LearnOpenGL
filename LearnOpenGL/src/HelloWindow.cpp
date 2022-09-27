@@ -102,10 +102,12 @@ int main()
 	// set up vertex data and buffers and configure vertex attributes
 	// --------------------------------------------------------------
 	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f
+		  0.1f, 0.1f, 0.0f,
+		 -0.1f, 0.1f, 0.0f,
+		  0.0f, 0.2f, 0.0f,
+		  0.1f, -0.1f, 0.0f,
+		  -0.1f, -0.1f, 0.0f,
+		  0.0f, -0.2f, 0.0f
 	};
 
 	unsigned int indices[] = {
@@ -163,8 +165,8 @@ int main()
 		// draw first triangle ^^
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		// glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+	    glDrawArrays(GL_TRIANGLES, 0, 6);
+		// glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		// check and call events and swap the buffers
 		// ------------------------------------------
