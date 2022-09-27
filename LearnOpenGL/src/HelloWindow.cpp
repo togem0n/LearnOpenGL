@@ -102,24 +102,32 @@ int main()
 	// set up vertex data and buffers and configure vertex attributes
 	// --------------------------------------------------------------
 	float vertices[] = {
+		 0.5f,  0.5f, 0.0f,
+		 0.5f, -0.5f, 0.0f,
 		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f
+		-0.5f,  0.5f, 0.0f
 	};
 
+	unsigned int indices[] = {
+		0, 1, 3,
+		1, 2, 3
+	};
 	// Initialization code (done once unless object ned to be changed frequently)
 	// 1. bind Vertex Array Object (VAO)
 	// 2. copy our vertices array in a buffer for OpenGL to use (VBO operations)
 	// 3. then set our vertex attributes pointers (mapping)
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO); // generate a buffer to store the data we created before(vertices)
 	// bind the Vertex Array Object first, then bind and set vertex buffers, and then configure vertex attributes.
+	glGenBuffers(1, &EBO);
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); // since buffer objects also has many different types, here we bind the data to the buffer.
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);// after we bind the buffer, we still need to send the data in.
 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	// now we stored the vertex data within memory on graphics card and managed by VBO
 	// which will be later processed by vertex shader and fragment shader.
 
@@ -155,7 +163,8 @@ int main()
 		// draw first triangle ^^
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		// glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		// check and call events and swap the buffers
 		// ------------------------------------------
