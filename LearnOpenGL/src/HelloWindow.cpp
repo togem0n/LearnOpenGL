@@ -51,6 +51,11 @@ int main()
 		0.0f, 0.5f, 0.0f,    0.0f, 0.0f, 1.0f,
 	};
 
+	// Shader Exercise 2 adding offset to the triangle
+	ourShader.use();
+	int offsetLocation = glGetUniformLocation(ourShader.ID, "offset");
+	glUniform3f(offsetLocation, 0.3f, 0.3f, 0.0f);
+
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -85,7 +90,9 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		ourShader.use();
+		//ourShader.use();
+		//int offsetLocation = glGetUniformLocation(ourShader.ID, "offset");
+		//glUniform3f(offsetLocation, 0.3f, 0.3f, 0.0f);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
