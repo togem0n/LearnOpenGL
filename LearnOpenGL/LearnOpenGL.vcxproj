@@ -21,8 +21,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Downloads\src\glad.c" />
     <ClCompile Include="src\HelloWindow.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\shader_s.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
