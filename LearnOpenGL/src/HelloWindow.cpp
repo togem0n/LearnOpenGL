@@ -24,7 +24,8 @@ int main()
 
 	// glfw window creation 
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, 
+										"LearnOpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Fail to create GLFW window" << std::endl;
@@ -44,8 +45,9 @@ int main()
 
 	// build and compile shader program 	
 	// --------------------------------
-
 	Shader ourShader = Shader(".\\src\\shader.vert", ".\\src\\shader.frag");
+
+	// set up vertex data and buffers and configure vertex attributes
 	float vertices[] = {
 		// position				// colors				texture coords
 		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,		1.0f, 1.0f,
@@ -84,22 +86,25 @@ int main()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+	// load and create texture
+	// -----------------------
 	unsigned int texture1, texture2;
 
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
 
+	// set the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	// set texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	// load and create a texture
+	// assign the image to texture
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load(".\\assets\\wall.jpg", &width, &height, &nrChannels, 0);
-
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
@@ -110,9 +115,10 @@ int main()
 	{
 		std::cout << "Fail to load texture1" << std::endl;
 	}
-
 	stbi_image_free(data);
 
+	// load and create texture2
+	// -----------------------
 	glGenTextures(1, &texture2);
 	glBindTexture(GL_TEXTURE_2D, texture2);
 
@@ -137,6 +143,7 @@ int main()
 
 	stbi_image_free(data);
 
+	// tell opengl for each sampler to which texture unit it belongs to
 	ourShader.use();
 	glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
 	ourShader.setInt("texture2", 1);
